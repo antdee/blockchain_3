@@ -1,8 +1,26 @@
+/* ===== Persist data with LevelDB ===================================
+|  Learn more: level: https://github.com/Level/level     |
+|  =============================================================*/
+
+const level = require('level');
+const chainDB = './chaindata';
+const db = level(chainDB, { valueEncoding: 'json' });
+
+
+// Add data to levelDB with key/value pair
+function addLevelDBData(key,value){
+  db.put(key, value, function(err) {
+    if (err) return console.log('Block ' + key + ' submission failed', err);
+  })
+}
+
+
 /* ===== SHA256 with Crypto-js ===============================
 |  Learn more: Crypto-js: https://github.com/brix/crypto-js  |
 |  =========================================================*/
 
 const SHA256 = require('crypto-js/sha256');
+const testt = require('./server_test')
 const sandbox = require('levelSandbox');
 const util = require('util');
 

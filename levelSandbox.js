@@ -21,30 +21,3 @@ function getLevelDBData(key){
     console.log(JSON.stringify(value, null, 4));
   })
 }
-
-
-  // get block
-function getBlock1(blockHeight) {
-    // return object as a single string
-    let key = blockchain.name+blockHeight
-    return  db.get(key).then(result => {
-      console.log(result)
-      console.log(result.height)
-      console.log(result.hash)
-      return result
-    })
-    .catch(err => console.log(err))
-  }
-
-  // get block
-function getBlock2(blockHeight) {
-    // return object as a single string
-    let key = blockchain.name+blockHeight
-    db.get(key).then(result => {
-      console.log(result)
-      console.log(result.height)
-      console.log(result.hash)
-      return result;
-    })
-    .catch(err => console.log(err))
-  }
