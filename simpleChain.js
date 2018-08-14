@@ -115,7 +115,7 @@ class Blockchain{
       } 
         
     })
-    .then( () => {
+    .then( async() => {
     // Block hash with SHA256 using newBlock and converting to a string
     newBlock.hash = SHA256(JSON.stringify(newBlock)).toString();
     console.log(newBlock);
@@ -124,11 +124,11 @@ class Blockchain{
     // E.g. 'UdCoin0' is Genesis block key, then 'UdCoin1', 'UdCoin2' etc
     let key = this.name+newBlock.height;
     // Add block object to sandbox
-    addLevelDBData(key, newBlock);
+    await addLevelDBData(key, newBlock);
     // Update the height of the chain
     // We are storing the chain lenght for later use
-    addLevelDBData(this.name+'Length', newBlock.height);
-    return newBlock;
+    await addLevelDBData(this.name+'Length', newBlock.height);
+    return newBlock.height;
     })
   }
   
@@ -323,7 +323,9 @@ const greeting = `Hello, world!<br>
                   /getblock/{input}<br>
                   Returns the block from provided user input, in JSON<br><br>
 
-
+                  /addblock/{data}<br>
+                  Adds a block to the chain with {data} as its body.<br>
+                  Returns the new block
                   `
 
 
@@ -366,7 +368,7 @@ server.route({
 
       // If there is no height, return an Error
       let maxHeight = await blockchain.getBlockHeight()
-      if (maxHeight <= 0) return 'Error. No blockheight data found...'
+      if (maxHeight < 0) return 'Error. No blockheight data found...'
 
       // Try to make the input an Int
       let input = parseInt(request.params.input)
@@ -381,23 +383,40 @@ server.route({
     }
 });
 
-
+// First method to add blocks from browser
 server.route({
     method: 'GET',
     path: '/addblock/{data}',
     handler: (request, h) => {
-
+      // get blockdata from user input
       let blockData = encodeURIComponent(request.params.data)
-      //let nne = await blockchain.addBlock(new Block(blockData))
+      // Retunn a promise, adds the block
       return blockchain.addBlock(new Block(blockData))
-      .then( () => blockchain.getBlockHeight())
-      .then(height => blockchain.getBlock_NoLog(height))
-      .then(result => result)
-      //let ttt = await blockchain.getBlock(height)
-      //return ttt
-      //return await blockchain.getBlockHeight()
+        // Gets the latest block, which is the one we just added above
+        .then(height => blockchain.getBlock_NoLog(height))
+        // Returns it
+        .then(result => result)
+
     }
 });
+
+// Second method to add blocks with POST
+server.route({
+    method: 'Post',
+    path: '/addblock',
+    handler: (request, h) => {
+      // get blockdata from user input
+      let blockData = request.payload.body
+      // Retunn a promise, adds the block
+      return blockchain.addBlock(new Block(blockData))
+        // Gets the latest block, which is the one we just added above
+        .then(height => blockchain.getBlock_NoLog(height))
+        // Returns it
+        .then(result => result)
+    }
+});
+
+
 
 const init = async () => {
 

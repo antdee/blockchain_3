@@ -24,6 +24,14 @@ npm install crypto-js --save
 ```
 npm install level --save
 ```
+- Install hapi and save it to your package.json dependencies:
+```
+npm install hapi --save
+```
+- Install inert
+```
+npm install --save inert
+```
 
 ## Testing
 
@@ -33,29 +41,49 @@ To test code:
 ```
 node
 ```
-3: Copy and paste your code into your node session
-simpleChain.js
-levelSandbox.js
-4: Instantiate blockchain with blockchain variable
-```
-let blockchain = new Blockchain('yourchainName');
-```
-	Note that you can choose whatever variable name you want instead of 'blockchain'
-	You do not have to enter a chain name argument, but choosing one will keep the leveldb data from being overwritten.
+3: Copy and paste `simpleChain.js` into your node session
 
-5: Generate 5 blocks using the generateBlocks(i) function
+4: Generate 5 blocks using the generateBlocks(i) function
 ```
 blockchain.generateBlocks(5)
 ```
-6: Validate blockchain
+5: Get blockheight
+
+In browser, navigate to http://localhost:3000/height and you get the blockchain height returned.
+
+Or, in the terminal use
+
+`curl -X "GET" "http://localhost:3000/height"`
+
+6: Get block
+
+In browser, navigate to http://localhost:3000/getblock/{input} and you get the block at height {input} returned.
+For example http://localhost:3000/getblock/0 will return the genesis block
+
+Or, in the terminal use
+
+`curl -X "GET" "http://localhost:3000/getblock/0"`
+
+
+7: Add block
+
+In browser, navigate to http://localhost:3000/addblock/{data} and it will add a block in the cahin with {data} as the block body.
+Then, it will return the last block of the chain
+For example, http://localhost:3000/addblock/test will add the next block with body : test
+and then return it
+
+Or, in the terminal use 
 ```
-blockchain.validateChain();
+$ curl -X "POST" "http://localhost:3000/addblock" -H 'Content-Type: application/json' -d $'{"body":"test!"}'
 ```
-7: Induce errors by changing block data
-```
-blockchain.induceErrorBlocks()
-```
-8: Validate blockchain. The chain should now fail with blocks 2,4, and 7.
-```
-blockchain.validateChain();
-```
+## Bugs and improvements
+
+Running `node simpleChain.js ` will return an error:
+`OpenError: IO error: lock ./chaindata/LOCK: already held by process`
+I would like a more elegant way to run the app than pasting the whole code in the node terminal.
+
+Also, I would like some help splitting the code into different files.
+I was thinking having simpleChain.js, levelSandbox.js and server.js.
+I understand this will be done by somehow exporting modules and importing them.
+
+
