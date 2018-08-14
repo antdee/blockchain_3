@@ -21,7 +21,14 @@ for (var i = 0; i < inducedErrorBlocks.length; i++) {
 // start the blockchain and generate Genesis block
 let blockchain2 = new Blockchain()
 
-blockchain.addBlock(new Block('test'))
+blockchain.addBlock(new Block('test7878')
+    ).then( () => blockchain.getBlockHeight()
+    ).then(height => blockchain.getBlock(height)
+    ).then(result => result)
+
+blockchain.addBlock(new Block('test')).then(result =>{
+    console.log('tttt\n', result)
+})
 
 
 

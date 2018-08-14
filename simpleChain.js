@@ -14,15 +14,29 @@ function addLevelDBData(key,value){
   })
 }
 
+// Get data from levelDB with key
+function getLevelDBData(key){
+  db.get(key, function(err, value) {
+    if (err) return console.log('Not found!', err);
+    console.log(JSON.stringify(value, null, 4));
+  })
+}
+
+
+
+//**********************************************************************
+
+
 
 /* ===== SHA256 with Crypto-js ===============================
 |  Learn more: Crypto-js: https://github.com/brix/crypto-js  |
 |  =========================================================*/
 
 const SHA256 = require('crypto-js/sha256');
-const testt = require('./server_test')
-const sandbox = require('levelSandbox');
+const sandbox2 = require('./levelSandbox');
 const util = require('util');
+
+let ttee = 'test?!?!?';
 
 
 
@@ -75,7 +89,7 @@ class Blockchain{
     // UTC timestamp
     newBlock.time = new Date().getTime().toString().slice(0,-3);
     // Check for blockheight and block history on LevelDB
-    this.getBlockHeight()
+    return this.getBlockHeight()
 
     .then(blockHeight => {
 
@@ -114,6 +128,7 @@ class Blockchain{
     // Update the height of the chain
     // We are storing the chain lenght for later use
     addLevelDBData(this.name+'Length', newBlock.height);
+    return newBlock;
     })
   }
   
@@ -283,3 +298,126 @@ class Blockchain{
   }
 
 }
+
+
+//*********************************************************
+
+/* ===== Server with Hapi.js  ===============================
+|            Learn more: https://hapijs.com/                 |
+|  =========================================================*/
+
+
+'use strict';
+
+const Hapi = require('hapi');
+let blockchain = new Blockchain()
+const greeting = `Hello, world!<br>
+                  RESTful Web API with Node.js Framework<br>
+                  Serving UdCoin blockchain data<br>
+                  <br>
+                  Valid paths:<br><br>
+
+                  /height<br>
+                  Returns the height of the chain<br><br>
+
+                  /getblock/{input}<br>
+                  Returns the block from provided user input, in JSON<br><br>
+
+
+                  `
+
+
+
+const server = Hapi.server({
+    port: 3000,
+    host: 'localhost'
+});
+
+
+// Homepage, greets and shows valid paths
+server.route({
+    method: 'GET',
+    path: '/',
+    handler: async (request, h) => {
+
+        return greeting;
+    }
+});
+
+
+// Returns blockheight, simple number
+server.route({
+    method: 'GET',
+    path: '/height',
+    handler: async (request, h) => {
+
+      let height = await blockchain.getBlockHeight()
+      if (height >= 0) return height
+      else return 'Error. No blockheight data found...'
+
+    }
+});
+
+// Returns the block from provided user input, in JSON
+server.route({
+    method: 'GET',
+    path: '/getblock/{input}',
+    handler: async (request, h) => {
+
+      // If there is no height, return an Error
+      let maxHeight = await blockchain.getBlockHeight()
+      if (maxHeight <= 0) return 'Error. No blockheight data found...'
+
+      // Try to make the input an Int
+      let input = parseInt(request.params.input)
+
+      // Check if input is a a valid blockHeight
+      if (input >= 0 && maxHeight >= input)
+        // Return the block
+        return await blockchain.getBlock(input)
+      else return `Invalid user input, please provide a number
+                   between 0 and ${maxHeight}
+                  `
+    }
+});
+
+
+server.route({
+    method: 'GET',
+    path: '/addblock/{data}',
+    handler: (request, h) => {
+
+      let blockData = encodeURIComponent(request.params.data)
+      //let nne = await blockchain.addBlock(new Block(blockData))
+      return blockchain.addBlock(new Block(blockData))
+      .then( () => blockchain.getBlockHeight())
+      .then(height => blockchain.getBlock_NoLog(height))
+      .then(result => result)
+      //let ttt = await blockchain.getBlock(height)
+      //return ttt
+      //return await blockchain.getBlockHeight()
+    }
+});
+
+const init = async () => {
+
+
+    await server.register({
+        plugin: require('hapi-pino'),
+        options: {
+            prettyPrint: true,
+            logEvents: [null, false]
+        }
+    });
+
+    await server.start();
+    console.log(`Server running at: ${server.info.uri}`);
+};
+
+process.on('unhandledRejection', (err) => {
+
+    console.log(err);
+    process.exit(1);
+});
+
+init();
