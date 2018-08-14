@@ -49,32 +49,32 @@ blockchain.generateBlocks(5)
 ```
 5: Get blockheight
 
-In browser, navigate to http://localhost:3000/height and you get the blockchain height returned.
+In browser, navigate to http://localhost:8000/height and you get the blockchain height returned.
 
 Or, in the terminal use
 
-`curl -X "GET" "http://localhost:3000/height"`
+`curl -X "GET" "http://localhost:8000/height"`
 
 6: Get block
 
-In browser, navigate to http://localhost:3000/getblock/{input} and you get the block at height {input} returned.
-For example http://localhost:3000/getblock/0 will return the genesis block
+In browser, navigate to http://localhost:8000/getblock/{input} and you get the block at height {input} returned.
+For example http://localhost:8000/getblock/0 will return the genesis block
 
 Or, in the terminal use
 
-`curl -X "GET" "http://localhost:3000/getblock/0"`
+`curl -X "GET" "http://localhost:8000/getblock/0"`
 
 
 7: Add block
 
-In browser, navigate to http://localhost:3000/addblock/{data} and it will add a block in the cahin with {data} as the block body.
+In browser, navigate to http://localhost:8000/addblock/{data} and it will add a block in the cahin with {data} as the block body.
 Then, it will return the last block of the chain
-For example, http://localhost:3000/addblock/test will add the next block with body : test
+For example, http://localhost:8000/addblock/test will add the next block with body : test
 and then return it
 
 Or, in the terminal use 
 ```
-$ curl -X "POST" "http://localhost:3000/addblock" -H 'Content-Type: application/json' -d $'{"body":"test!"}'
+$ curl -X "POST" "http://localhost:8000/addblock" -H 'Content-Type: application/json' -d $'{"body":"test!"}'
 ```
 ## Bugs and improvements
 
