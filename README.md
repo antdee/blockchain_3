@@ -86,11 +86,4 @@ Or, in the terminal use
 ```
 $ curl -X "POST" "http://localhost:8000/block" -H 'Content-Type: application/json' -d $'{"body":"test!"}'
 ```
-## Bugs and improvements
-
-Running `node simpleChain.js ` will return an error:
-`OpenError: IO error: lock ./chaindata/LOCK: already held by process`
-I would like a more elegant way to run the app than pasting the whole code in the node terminal.
-
-
 
