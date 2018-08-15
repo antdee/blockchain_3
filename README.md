@@ -1,6 +1,7 @@
 # Blockchain Data
 
 Blockchain has the potential to change the way that the world approaches data. Develop Blockchain skills by understanding the data model behind Blockchain by developing your own simplified private blockchain.
+On this project, we will use the [Hapi.js](https://hapijs.com/) framewrk to configure a RESTful Web API and provide API Endpoints.
 
 ## Getting Started
 
@@ -10,7 +11,16 @@ These instructions will get you a copy of the project up and running on your loc
 
 Installing Node and NPM is pretty straightforward using the installer package available from the (Node.js® web site)[https://nodejs.org/en/].
 
-### Configuring your project
+### Configuring your project, fast way
+
+From the project directory, simpy run 
+```
+npm install
+```
+This will get all the required packages from `package.json` and install them
+
+
+### Configuring your project, long way
 
 - Use NPM to initialize your project and create package.json to store project dependencies.
 ```
@@ -57,12 +67,12 @@ Or, in the terminal use
 
 6: Get block
 
-In browser, navigate to http://localhost:8000/getblock/{input} and you get the block at height {input} returned.
+In browser, navigate to http://localhost:8000/block/{input} and you get the block at height {input} returned.
 For example http://localhost:8000/getblock/0 will return the genesis block
 
 Or, in the terminal use
 
-`curl -X "GET" "http://localhost:8000/getblock/0"`
+`curl -X "GET" "http://localhost:8000/block/0"`
 
 
 7: Add block
@@ -74,7 +84,7 @@ and then return it
 
 Or, in the terminal use 
 ```
-$ curl -X "POST" "http://localhost:8000/addblock" -H 'Content-Type: application/json' -d $'{"body":"test!"}'
+$ curl -X "POST" "http://localhost:8000/block" -H 'Content-Type: application/json' -d $'{"body":"test!"}'
 ```
 ## Bugs and improvements
 
@@ -82,8 +92,5 @@ Running `node simpleChain.js ` will return an error:
 `OpenError: IO error: lock ./chaindata/LOCK: already held by process`
 I would like a more elegant way to run the app than pasting the whole code in the node terminal.
 
-Also, I would like some help splitting the code into different files.
-I was thinking having simpleChain.js, levelSandbox.js and server.js.
-I understand this will be done by somehow exporting modules and importing them.
 
 
